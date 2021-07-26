@@ -87,7 +87,7 @@ resource "google_storage_bucket" "bucket_gcf_source" {
   storage_class = "REGIONAL"
   location      = var.region
   force_destroy = "true"
-  uniform_bucket_level_access = var.uniform_bucket_level_access
+  uniform_bucket_level_access = "true"
 }
 
 data "archive_file" "local_poller_source" {
@@ -125,6 +125,7 @@ resource "google_cloudfunctions_function" "poller_function" {
     event_type = "google.pubsub.topic.publish"
     resource   = google_pubsub_topic.poller_topic.id
   }
+  ingress_settings = "ALLOW_INTERNAL_AND_GCLB"
   source_archive_bucket = google_storage_bucket.bucket_gcf_source.name
   source_archive_object = google_storage_bucket_object.gcs_functions_poller_source.name
   service_account_email = google_service_account.poller_sa.email
@@ -141,6 +142,7 @@ resource "google_cloudfunctions_function" "scaler_function" {
     event_type = "google.pubsub.topic.publish"
     resource   = google_pubsub_topic.scaler_topic.id
   }
+  ingress_settings = "ALLOW_INTERNAL_AND_GCLB"
   source_archive_bucket = google_storage_bucket.bucket_gcf_source.name
   source_archive_object = google_storage_bucket_object.gcs_functions_scaler_source.name
   service_account_email = google_service_account.scaler_sa.email
