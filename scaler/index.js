@@ -148,19 +148,21 @@ function processSpannerOverrides(spanner) {
     if (!spanner.configOverrides) {
         return;
     }
-    log(`---- Spanner configuration before overrides: ${spanner}`, 'INFO');
-    var nowMs = new Date().getUTCMilliseconds();
-    for (var i = 0; i < spanner.configOverrides.size(); i++) {
-        var override = spanner.configOverrides.get(i);
-        var startMs = new Date(override.startTime).getUTCMilliseconds();
-        var endMs = new Date(override.endTime).getUTCMilliseconds();
+    console.log(`---- Spanner configuration before overrides: ${JSON.stringify(spanner)}`, 'INFO');
+    var nowMs = new Date().getTime();
+    for (var i = 0; i < spanner.configOverrides.length; i++) {
+        var override = spanner.configOverrides[i];
+        var startMs = new Date(override.startTime).getTime();
+        var endMs = new Date(override.endTime).getTime();
+        console.log(`start: ${startMs}, end: ${endMs}, nowMs: ${nowMs}`);
         if (nowMs > startMs && nowMs < endMs) {
-            for (const prop in override) {
-                spanner.prop = override[prop];
+            for (const [key, value] of Object.entries(override)) {
+            console.log(`key: ${key}, value: ${value}`);
+                spanner[key] = value;
             }
         }
     }
-    log(`---- Spanner configuration after overrides: ${spanner}`, 'INFO');
+    console.log(`---- Spanner configuration after overrides: ${JSON.stringify(spanner)}`, 'INFO');
 }
 
 exports.scaleSpannerInstancePubSub = async(pubSubEvent, context) => {
